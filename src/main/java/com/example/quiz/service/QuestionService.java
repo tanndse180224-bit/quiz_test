@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 @Service
 public class QuestionService {
     
+    private static final int MIN_ANSWERS = 2;
+    private static final int MAX_ANSWERS = 4;
+    
     @Autowired
     private QuestionRepository questionRepository;
     
@@ -125,9 +128,10 @@ public class QuestionService {
                 .collect(Collectors.toList());
         questionDTO.setAnswers(answers);
         
-        if (answers.size() < 2 || answers.size() > 4) {
+        if (answers.size() < MIN_ANSWERS || answers.size() > MAX_ANSWERS) {
             throw new IllegalArgumentException(
-                String.format("Số lượng câu trả lời không hợp lệ: %d. Phải có từ 2 đến 4 câu trả lời.", answers.size())
+                String.format("Số lượng câu trả lời không hợp lệ: %d. Phải có từ %d đến %d câu trả lời.", 
+                    answers.size(), MIN_ANSWERS, MAX_ANSWERS)
             );
         }
         
