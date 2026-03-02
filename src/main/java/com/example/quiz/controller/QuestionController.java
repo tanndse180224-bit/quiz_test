@@ -125,8 +125,8 @@ public class QuestionController {
         
         // LỖI CÚ PHÁP 5-8 ĐÃ SỬA: Thêm dấu chấm phẩy và dấu )
         
-        // LỖI 8: Logic sai - nên dùng questions.size() thay vì questions.size() + 1
-        int totalQuestions = questions.size() + 1;
+        // LỖI 8 ĐÃ SỬA: Logic đúng - dùng questions.size() không cộng thêm 1
+        int totalQuestions = questions.size();
         
         // LỖI CÚ PHÁP 9 ĐÃ SỬA: Thêm dấu chấm phẩy
         
