@@ -1,5 +1,9 @@
 # 🎓 Ứng dụng Thi Trắc Nghiệm Online - Triết học Mác-Lênin
 
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-green)
+![License](https://img.shields.io/badge/License-MIT-blue)
+
 Ứng dụng web cho phép quản lý câu hỏi trắc nghiệm và thực hiện bài kiểm tra trực tuyến. Hệ thống **tự động import 50+ câu hỏi Triết học** khi khởi động lần đầu.
 
 ## ✨ Tính năng Nổi bật
