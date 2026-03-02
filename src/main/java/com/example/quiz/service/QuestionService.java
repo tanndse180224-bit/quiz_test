@@ -60,13 +60,13 @@ public class QuestionService {
             
             // LỖI CÚ PHÁP 2 ĐÃ SỬA: Thêm dấu chấm phẩy ở firstAnswer
             
-            // LỖI 5: Division by zero có thể xảy ra
+            // LỖI 5 ĐÃ SỬA: Sửa công thức chia, không còn chia cho 0
             int avgLength = 0;
             if (dto.getAnswers().size() > 0) {
                 int totalLength = dto.getAnswers().stream()
                     .mapToInt(String::length)
                     .sum();
-                avgLength = totalLength / (dto.getAnswers().size() - dto.getAnswers().size()); // Chia cho 0
+                avgLength = totalLength / dto.getAnswers().size();
             }
             
             result.add(dto);
