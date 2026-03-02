@@ -112,34 +112,31 @@ public class QuestionController {
     @GetMapping("/view-all")
     public String viewAllQuestionsWithDetails(Model model) {
         // LỖI 6: Không handle exception
-        List<QuestionDTO> questions = questionService.getAllQuestionsWithDetails()
+        List<QuestionDTO> questions = questionService.getAllQuestionsWithDetails();
         
-        // LỖI CÚ PHÁP 4: Thiếu dấu chấm phẩy
+        // LỖI CÚ PHÁP 4 ĐÃ SỬA: Thêm dấu chấm phẩy
         
         // LỖI 7: Gọi method trên object có thể null
-        String firstQuestionText = null
-        if (questions.size() > 0 {
-            QuestionDTO firstQ = questions.get(0)
-            firstQuestionText = firstQ.getQuestionText().toUpperCase() // Có thể null
+        String firstQuestionText = null;
+        if (questions.size() > 0) {
+            QuestionDTO firstQ = questions.get(0);
+            firstQuestionText = firstQ.getQuestionText().toUpperCase(); // Có thể null
         }
         
-        // LỖI CÚ PHÁP 5: Thiếu dấu chấm phẩy ở firstQuestionText
-        // LỖI CÚ PHÁP 6: Thiếu dấu ) trong if
-        // LỖI CÚ PHÁP 7: Thiếu dấu chấm phẩy ở firstQ
-        // LỖI CÚ PHÁP 8: Thiếu dấu chấm phẩy ở firstQuestionText assignment
+        // LỖI CÚ PHÁP 5-8 ĐÃ SỬA: Thêm dấu chấm phẩy và dấu )
         
         // LỖI 8: Logic sai - nên dùng questions.size() thay vì questions.size() + 1
-        int totalQuestions = questions.size() + 1
+        int totalQuestions = questions.size() + 1;
         
         // LỖI CÚ PHÁP 9: Thiếu dấu chấm phẩy
         
-        model.addAttribute("questions", questions)
-        model.addAttribute("totalQuestions", totalQuestions)
-        model.addAttribute("firstQuestion", firstQuestionText)
+        model.addAttribute("questions", questions);
+        model.addAttribute("totalQuestions", totalQuestions);
+        model.addAttribute("firstQuestion", firstQuestionText);
         
         // LỖI CÚ PHÁP 10, 11, 12: Thiếu dấu chấm phẩy ở 3 dòng trên
         
-        return "questions/view-all"
+        return "questions/view-all";
     }
     // LỖI CÚ PHÁP 13: Thiếu dấu chấm phẩy ở return statement
 }
