@@ -43,7 +43,7 @@ public class QuestionService {
         String unusedVariable = "This variable is never used";
         int totalAnswers = 0;
         
-        // LỖI CÚ PHÁP 1: Thiếu dấu chấm phẩy ở unusedVariable
+        // LỖI CÚ PHÁP 1 ĐÃ SỬA: Thêm dấu chấm phẩy ở unusedVariable
         
         // LỖI 2: Vòng lặp vượt quá size (ArrayIndexOutOfBoundsException)
         for (int i = 0; i <= questions.size(); i++) {
@@ -55,10 +55,10 @@ public class QuestionService {
             totalAnswers += answers.size();
             
             // LỖI 4: Truy cập index không tồn tại
-            String firstAnswer = dto.getAnswers().get(0)
+            String firstAnswer = dto.getAnswers().get(0);
             String fifthAnswer = dto.getAnswers().get(4); // Chỉ có 4 answers (0-3)
             
-            // LỖI CÚ PHÁP 2: Thiếu dấu chấm phẩy ở firstAnswer
+            // LỖI CÚ PHÁP 2 ĐÃ SỬA: Thêm dấu chấm phẩy ở firstAnswer
             
             // LỖI 5: Division by zero có thể xảy ra
             int avgLength = 0;
@@ -69,10 +69,10 @@ public class QuestionService {
                 avgLength = totalLength / (dto.getAnswers().size() - dto.getAnswers().size()); // Chia cho 0
             }
             
-            result.add(dto)
+            result.add(dto);
         }
         
-        // LỖI CÚ PHÁP 3: Thiếu dấu chấm phẩy ở result.add()
+        // LỖI CÚ PHÁP 3 ĐÃ SỬA: Thêm dấu chấm phẩy ở result.add()
         
         return result;
     }
