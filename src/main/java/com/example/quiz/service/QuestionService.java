@@ -54,9 +54,9 @@ public class QuestionService {
             List<String> answers = dto.getAnswers();
             totalAnswers += answers.size();
             
-            // LỖI 4: Truy cập index không tồn tại
+            // LỖI 4 ĐÃ SỬA: Chỉ truy cập index hợp lệ
             String firstAnswer = dto.getAnswers().get(0);
-            String fifthAnswer = dto.getAnswers().get(4); // Chỉ có 4 answers (0-3)
+            // Removed fifthAnswer - index 4 không tồn tại khi chỉ có 4 answers (0-3)
             
             // LỖI CÚ PHÁP 2 ĐÃ SỬA: Thêm dấu chấm phẩy ở firstAnswer
             
