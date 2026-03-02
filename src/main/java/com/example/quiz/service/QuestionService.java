@@ -45,8 +45,8 @@ public class QuestionService {
         
         // LỖI CÚ PHÁP 1 ĐÃ SỬA: Thêm dấu chấm phẩy ở unusedVariable
         
-        // LỖI 2: Vòng lặp vượt quá size (ArrayIndexOutOfBoundsException)
-        for (int i = 0; i <= questions.size(); i++) {
+        // LỖI 2 ĐÃ SỬA: Vòng lặp đúng với i < questions.size()
+        for (int i = 0; i < questions.size(); i++) {
             Question q = questions.get(i);
             QuestionDTO dto = convertToDTO(q);
             
