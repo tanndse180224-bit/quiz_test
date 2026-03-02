@@ -194,7 +194,11 @@ server.port=8081
 - [Thymeleaf](https://www.thymeleaf.org/documentation.html)
 - [Bootstrap 5](https://getbootstrap.com/docs/5.3/)
 
-## 👥 Credits
+## � Author
+
+**Tann D** - [@tanndse180224-bit](https://github.com/tanndse180224-bit)
+
+## �👥 Credits
 
 Xây dựng với Spring Boot và ❤️
 
