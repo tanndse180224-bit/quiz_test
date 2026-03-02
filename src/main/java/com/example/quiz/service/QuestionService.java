@@ -77,6 +77,11 @@ public class QuestionService {
         return result;
     }
     
+    /**
+     * Lấy thông tin một câu hỏi theo ID
+     * @param id ID của câu hỏi cần tìm
+     * @return Optional chứa QuestionDTO nếu tìm thấy
+     */
     public Optional<QuestionDTO> getQuestionById(Long id) {
         return questionRepository.findById(id)
                 .map(this::convertToDTO);
