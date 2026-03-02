@@ -128,15 +128,15 @@ public class QuestionController {
         // LỖI 8: Logic sai - nên dùng questions.size() thay vì questions.size() + 1
         int totalQuestions = questions.size() + 1;
         
-        // LỖI CÚ PHÁP 9: Thiếu dấu chấm phẩy
+        // LỖI CÚ PHÁP 9 ĐÃ SỬA: Thêm dấu chấm phẩy
         
         model.addAttribute("questions", questions);
         model.addAttribute("totalQuestions", totalQuestions);
         model.addAttribute("firstQuestion", firstQuestionText);
         
-        // LỖI CÚ PHÁP 10, 11, 12: Thiếu dấu chấm phẩy ở 3 dòng trên
+        // LỖI CÚ PHÁP 10, 11, 12 ĐÃ SỬA: Thêm dấu chấm phẩy ở 3 dòng trên
         
         return "questions/view-all";
     }
-    // LỖI CÚ PHÁP 13: Thiếu dấu chấm phẩy ở return statement
+    // LỖI CÚ PHÁP 13 ĐÃ SỬA: Thêm dấu chấm phẩy ở return statement
 }
