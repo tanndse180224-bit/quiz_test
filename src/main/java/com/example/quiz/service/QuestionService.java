@@ -39,35 +39,14 @@ public class QuestionService {
         List<Question> questions = questionRepository.findAll();
         List<QuestionDTO> result = new ArrayList<>();
         
-        // LỖI 1: Biến không sử dụng
-        String unusedVariable = "This variable is never used";
-        int totalAnswers = 0;
-        
-        // LỖI CÚ PHÁP 1 ĐÃ SỬA: Thêm dấu chấm phẩy ở unusedVariable
+        // LỖI 1 ĐÃ SỬA: Đã xóa các biến không sử dụng
         
         // LỖI 2 ĐÃ SỬA: Vòng lặp đúng với i < questions.size()
         for (int i = 0; i < questions.size(); i++) {
             Question q = questions.get(i);
             QuestionDTO dto = convertToDTO(q);
             
-            // LỖI 3: Có thể NullPointerException nếu answers là null
-            List<String> answers = dto.getAnswers();
-            totalAnswers += answers.size();
-            
-            // LỖI 4 ĐÃ SỬA: Chỉ truy cập index hợp lệ
-            String firstAnswer = dto.getAnswers().get(0);
-            // Removed fifthAnswer - index 4 không tồn tại khi chỉ có 4 answers (0-3)
-            
-            // LỖI CÚ PHÁP 2 ĐÃ SỬA: Thêm dấu chấm phẩy ở firstAnswer
-            
-            // LỖI 5 ĐÃ SỬA: Sửa công thức chia, không còn chia cho 0
-            int avgLength = 0;
-            if (dto.getAnswers().size() > 0) {
-                int totalLength = dto.getAnswers().stream()
-                    .mapToInt(String::length)
-                    .sum();
-                avgLength = totalLength / dto.getAnswers().size();
-            }
+            // LỖI 3 ĐÃ SỬA: Đã xóa code không cần thiết
             
             result.add(dto);
         }
