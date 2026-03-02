@@ -39,16 +39,13 @@ public class QuestionService {
         List<Question> questions = questionRepository.findAll();
         List<QuestionDTO> result = new ArrayList<>();
         
-        // LỖI 1 ĐÃ SỬA: Đã xóa các biến không sử dụng
-        
-        // LỖI 2 ĐÃ SỬA: Vòng lặp đúng với i < questions.size()
-        for (int i = 0; i < questions.size(); i++) {
+        // LỖI MỚI: Vòng lặp vô hạn - biến i không bao giờ tăng lên
+        int i = 0;
+        while (i < questions.size()) {
             Question q = questions.get(i);
             QuestionDTO dto = convertToDTO(q);
-            
-            // LỖI 3 ĐÃ SỬA: Đã xóa code không cần thiết
-            
             result.add(dto);
+            // THIẾU: i++; - Vòng lặp sẽ chạy mãi không dừng!
         }
         
         // LỖI CÚ PHÁP 3 ĐÃ SỬA: Thêm dấu chấm phẩy ở result.add()
