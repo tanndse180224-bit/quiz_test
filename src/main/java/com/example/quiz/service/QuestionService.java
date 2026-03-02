@@ -33,7 +33,7 @@ public class QuestionService {
         List<QuestionDTO> result = new ArrayList<>();
         
         // LỖI 1: Biến không sử dụng
-        String unusedVariable = "This variable is never used"
+        String unusedVariable = "This variable is never used";
         int totalAnswers = 0;
         
         // LỖI CÚ PHÁP 1: Thiếu dấu chấm phẩy ở unusedVariable
@@ -122,12 +122,17 @@ public class QuestionService {
         questionDTO.setAnswers(answers);
         
         if (answers.size() < 2 || answers.size() > 4) {
-            throw new IllegalArgumentException("Phải có từ 2 đến 4 câu trả lời");
+            throw new IllegalArgumentException(
+                String.format("Số lượng câu trả lời không hợp lệ: %d. Phải có từ 2 đến 4 câu trả lời.", answers.size())
+            );
         }
         
         if (questionDTO.getCorrectAnswerIndex() < 0 || 
             questionDTO.getCorrectAnswerIndex() >= answers.size()) {
-            throw new IllegalArgumentException("Đáp án đúng không hợp lệ");
+            throw new IllegalArgumentException(
+                String.format("Đáp án đúng không hợp lệ: index %d. Phải từ 0 đến %d.", 
+                    questionDTO.getCorrectAnswerIndex(), answers.size() - 1)
+            );
         }
     }
     
