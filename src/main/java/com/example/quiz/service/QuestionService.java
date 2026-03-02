@@ -19,6 +19,10 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
     
+    /**
+     * Lấy tất cả câu hỏi từ database
+     * @return Danh sách tất cả câu hỏi dạng DTO
+     */
     public List<QuestionDTO> getAllQuestions() {
         return questionRepository.findAll().stream()
                 .map(this::convertToDTO)
