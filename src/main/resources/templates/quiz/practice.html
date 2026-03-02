@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chế độ Tập Luyện - Quiz App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .practice-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .progress-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-correct { color: #28a745; }
+        .stat-incorrect { color: #dc3545; }
+        .stat-current { color: #667eea; }
+        
+        .question-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .question-number {
+            color: #667eea;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .answer-option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .answer-option:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+            transform: translateX(5px);
+        }
+        
+        .answer-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .answer-option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .answer-option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .answer-option.correct-answer {
+            background: #d1e7dd;
+            border-color: #198754;
+            border-width: 3px;
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        .answer-option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .answer-icon {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .feedback-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .feedback-correct {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .feedback-incorrect {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .feedback-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-finish {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        
+        .completion-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .completion-icon {
+            font-size: 4rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .completion-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="practice-container">
+        <!-- Header with Progress -->
+        <div class="header-card">
+            <h2 class="text-center mb-2">
+                <i class="fas fa-dumbbell"></i> Chế độ Tập Luyện
+            </h2>
+            <p class="text-center text-muted mb-3">Xem đáp án ngay sau mỗi câu hỏi</p>
+            
+            <div class="progress" style="height: 10px;">
+                <div class="progress-bar" role="progressbar" style="width: 0%;" id="progressBar"></div>
+            </div>
+            
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <div class="stat-number stat-correct" id="correctCount">0</div>
+                    <div class="text-muted">Đúng</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number stat-incorrect" id="incorrectCount">0</div>
+                    <div class="text-muted">Sai</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number stat-current">
+                        <span id="currentQuestion">1</span>/<span th:text="${totalQuestions}">10</span>
+                    </div>
+                    <div class="text-muted">Câu hỏi</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Question Card -->
+        <div class="question-card" id="questionCard">
+            <div class="question-number" id="questionNumber">Câu 1</div>
+            <div class="question-text" id="questionText"></div>
+            <div id="answersContainer"></div>
+            
+            <!-- Feedback Box -->
+            <div class="feedback-box" id="feedbackBox">
+                <div class="text-center">
+                    <div class="feedback-icon" id="feedbackIcon"></div>
+                    <h4 id="feedbackTitle"></h4>
+                    <p id="feedbackMessage"></p>
+                </div>
+                <button class="btn btn-next w-100" id="btnNext">
+                    <i class="fas fa-arrow-right"></i> Câu tiếp theo
+                </button>
+            </div>
+        </div>
+        
+        <!-- Completion Card -->
+        <div class="completion-card" id="completionCard">
+            <div class="completion-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2>Hoàn thành!</h2>
+            <div class="completion-score">
+                <span id="finalCorrect">0</span>/<span th:text="${totalQuestions}">10</span>
+            </div>
+            <p class="text-muted">Số câu trả lời đúng</p>
+            <div class="mt-4">
+                <a href="/quiz/practice" class="btn btn-primary me-2">
+                    <i class="fas fa-redo"></i> Luyện tập lại
+                </a>
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="fas fa-home"></i> Về trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script th:inline="javascript">
+        const questions = /*[[${questions}]]*/ [];
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let hasAnswered = false;
+        
+        function loadQuestion(index) {
+            if (index >= questions.length) {
+                showCompletion();
+                return;
+            }
+            
+            const question = questions[index];
+            hasAnswered = false;
+            
+            document.getElementById('questionNumber').textContent = `Câu ${index + 1}`;
+            document.getElementById('questionText').textContent = question.questionText;
+            document.getElementById('currentQuestion').textContent = index + 1;
+            document.getElementById('feedbackBox').style.display = 'none';
+            document.getElementById('btnNext').style.display = 'none';
+            
+            const answersContainer = document.getElementById('answersContainer');
+            answersContainer.innerHTML = '';
+            
+            question.answers.forEach((answer, answerIndex) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'answer-option';
+                optionDiv.innerHTML = `
+                    <span class="answer-icon">${String.fromCharCode(65 + answerIndex)}.</span>
+                    <span>${answer}</span>
+                `;
+                optionDiv.onclick = () => selectAnswer(answerIndex, question.id);
+                answersContainer.appendChild(optionDiv);
+            });
+            
+            updateProgress();
+        }
+        
+        function selectAnswer(answerIndex, questionId) {
+            if (hasAnswered) return;
+            
+            hasAnswered = true;
+            const options = document.querySelectorAll('.answer-option');
+            options.forEach(opt => opt.classList.add('disabled'));
+            
+            // Call API to check answer
+            fetch('/quiz/practice/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    questionId: questionId,
+                    answeredIndex: answerIndex
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showFeedback(answerIndex, data.correctIndex, data.correct, data.correctAnswer);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        
+        function showFeedback(answeredIndex, correctIndex, isCorrect, correctAnswer) {
+            const options = document.querySelectorAll('.answer-option');
+            
+            // Mark answered option
+            options[answeredIndex].classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            // Always show correct answer
+            if (!isCorrect) {
+                options[correctIndex].classList.add('correct-answer');
+            }
+            
+            // Update stats
+            if (isCorrect) {
+                correctCount++;
+                document.getElementById('correctCount').textContent = correctCount;
+            } else {
+                incorrectCount++;
+                document.getElementById('incorrectCount').textContent = incorrectCount;
+            }
+            
+            // Show feedback box
+            const feedbackBox = document.getElementById('feedbackBox');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            
+            if (isCorrect) {
+                feedbackBox.className = 'feedback-box feedback-correct';
+                feedbackIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                feedbackTitle.textContent = 'Chính xác! 🎉';
+                feedbackMessage.textContent = 'Bạn đã chọn đúng đáp án.';
+            } else {
+                feedbackBox.className = 'feedback-box feedback-incorrect';
+                feedbackIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                feedbackTitle.textContent = 'Chưa đúng! 😔';
+                feedbackMessage.innerHTML = `Đáp án đúng là: <strong>${correctAnswer}</strong>`;
+            }
+            
+            feedbackBox.style.display = 'block';
+            document.getElementById('btnNext').style.display = 'block';
+        }
+        
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion(currentQuestionIndex);
+        }
+        
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function showCompletion() {
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('completionCard').style.display = 'block';
+            document.getElementById('finalCorrect').textContent = correctCount;
+        }
+        
+        // Event listeners
+        document.getElementById('btnNext').addEventListener('click', nextQuestion);
+        
+        // Load first question
+        loadQuestion(0);
+    </script>
+</body>
+</html>

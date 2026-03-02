@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit} ? 'Sửa Câu Hỏi' : 'Thêm Câu Hỏi Mới'">Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+        }
+        .card {
+            border: none;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a4093 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark navbar-custom mb-4">
+        <div class="container">
+            <a href="/" class="navbar-brand mb-0 h1">
+                <i class="fas fa-question-circle"></i> Quản Lý Câu Hỏi Trắc Nghiệm
+            </a>
+            <a href="/questions" class="btn btn-light">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header text-white">
+                        <h4 class="mb-0">
+                            <i th:class="${isEdit} ? 'fas fa-edit' : 'fas fa-plus'"></i>
+                            <span th:text="${isEdit} ? 'Sửa Câu Hỏi' : 'Thêm Câu Hỏi Mới'"></span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Error Message -->
+                        <div th:if="${errorMessage}" class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+                        </div>
+
+                        <form th:action="${isEdit} ? @{/questions/edit/{id}(id=${question.id})} : @{/questions/new}" 
+                              th:object="${question}" 
+                              method="post">
+                            
+                            <!-- Question Text -->
+                            <div class="mb-3">
+                                <label for="questionText" class="form-label">
+                                    <strong>Câu hỏi:</strong>
+                                </label>
+                                <textarea class="form-control" 
+                                          id="questionText" 
+                                          th:field="*{questionText}" 
+                                          rows="3" 
+                                          placeholder="Nhập nội dung câu hỏi..."
+                                          required></textarea>
+                                <div class="text-danger" th:if="${#fields.hasErrors('questionText')}" 
+                                     th:errors="*{questionText}"></div>
+                            </div>
+
+                            <!-- Answers -->
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Câu trả lời (2-4 câu):</strong></label>
+                                
+                                <div id="answersContainer">
+                                    <!-- Answer 1 -->
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text">A.</span>
+                                        <input type="text" class="form-control" 
+                                               th:field="*{answers[0]}" 
+                                               placeholder="Câu trả lời A" required>
+                                    </div>
+                                    
+                                    <!-- Answer 2 -->
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text">B.</span>
+                                        <input type="text" class="form-control" 
+                                               th:field="*{answers[1]}" 
+                                               placeholder="Câu trả lời B" required>
+                                    </div>
+                                    
+                                    <!-- Answer 3 -->
+                                    <div class="input-group mb-2" id="answer3Group">
+                                        <span class="input-group-text">C.</span>
+                                        <input type="text" class="form-control" 
+                                               th:field="*{answers[2]}" 
+                                               placeholder="Câu trả lời C (tùy chọn)">
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="removeAnswer(3)" 
+                                                th:if="${question.answers.size() > 2}">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Answer 4 -->
+                                    <div class="input-group mb-2" id="answer4Group" 
+                                         th:style="${question.answers.size() < 3} ? 'display:none;' : ''">
+                                        <span class="input-group-text">D.</span>
+                                        <input type="text" class="form-control" 
+                                               th:field="*{answers[3]}" 
+                                               placeholder="Câu trả lời D (tùy chọn)">
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="removeAnswer(4)"
+                                                th:if="${question.answers.size() > 3}">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" 
+                                        id="addAnswerBtn" onclick="addAnswer()">
+                                    <i class="fas fa-plus"></i> Thêm câu trả lời
+                                </button>
+                            </div>
+
+                            <!-- Correct Answer Selection -->
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Đáp án đúng:</strong></label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" 
+                                               th:field="*{correctAnswerIndex}" 
+                                               value="0" id="correct0" required>
+                                        <label class="form-check-label" for="correct0">A</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" 
+                                               th:field="*{correctAnswerIndex}" 
+                                               value="1" id="correct1" required>
+                                        <label class="form-check-label" for="correct1">B</label>
+                                    </div>
+                                    <div class="form-check form-check-inline" id="correctC">
+                                        <input class="form-check-input" type="radio" 
+                                               th:field="*{correctAnswerIndex}" 
+                                               value="2" id="correct2">
+                                        <label class="form-check-label" for="correct2">C</label>
+                                    </div>
+                                    <div class="form-check form-check-inline" id="correctD" 
+                                         th:style="${question.answers.size() < 3} ? 'display:none;' : ''">
+                                        <input class="form-check-input" type="radio" 
+                                               th:field="*{correctAnswerIndex}" 
+                                               value="3" id="correct3">
+                                        <label class="form-check-label" for="correct3">D</label>
+                                    </div>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('correctAnswerIndex')}" 
+                                     th:errors="*{correctAnswerIndex}"></div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-flex justify-content-between">
+                                <a href="/questions" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
+                                <button type="submit" class="btn btn-gradient btn-lg">
+                                    <i class="fas fa-save"></i> 
+                                    <span th:text="${isEdit} ? 'Cập nhật' : 'Tạo câu hỏi'"></span>
+                                </button>
+                            </div>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let answerCount = document.querySelectorAll('#answersContainer .input-group').length;
+        
+        function addAnswer() {
+            if (answerCount < 4) {
+                if (answerCount === 2) {
+                    document.getElementById('answer3Group').style.display = 'flex';
+                    document.getElementById('correctC').style.display = 'inline-block';
+                } else if (answerCount === 3) {
+                    document.getElementById('answer4Group').style.display = 'flex';
+                    document.getElementById('correctD').style.display = 'inline-block';
+                    document.getElementById('addAnswerBtn').style.display = 'none';
+                }
+                answerCount++;
+            }
+        }
+        
+        function removeAnswer(index) {
+            if (answerCount > 2) {
+                if (index === 3) {
+                    document.getElementById('answer3Group').style.display = 'none';
+                    document.getElementById('answer3Group').querySelector('input').value = '';
+                    document.getElementById('correctC').style.display = 'none';
+                    document.getElementById('correct2').checked = false;
+                } else if (index === 4) {
+                    document.getElementById('answer4Group').style.display = 'none';
+                    document.getElementById('answer4Group').querySelector('input').value = '';
+                    document.getElementById('correctD').style.display = 'none';
+                    document.getElementById('correct3').checked = false;
+                    document.getElementById('addAnswerBtn').style.display = 'inline-block';
+                }
+                answerCount--;
+            }
+        }
+        
+        // Initialize button state
+        if (answerCount >= 4) {
+            document.getElementById('addAnswerBtn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

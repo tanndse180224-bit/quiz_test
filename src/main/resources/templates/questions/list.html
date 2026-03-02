@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Câu Hỏi Trắc Nghiệm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+        }
+        .question-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .correct-answer {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a4093 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark navbar-custom mb-4">
+        <div class="container">
+            <a href="/" class="navbar-brand mb-0 h1">
+                <i class="fas fa-question-circle"></i> Quản Lý Câu Hỏi Trắc Nghiệm
+            </a>
+            <a href="/" class="btn btn-light">
+                <i class="fas fa-home"></i> Trang Chủ
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-list"></i> Danh Sách Câu Hỏi</h2>
+            <div>
+                <a href="/questions/view-all" class="btn btn-info btn-lg me-2">
+                    <i class="fas fa-eye"></i> Xem Chi Tiết (Demo Lỗi)
+                </a>
+                <a href="/questions/new" class="btn btn-gradient btn-lg">
+                    <i class="fas fa-plus"></i> Thêm Câu Hỏi Mới
+                </a>
+            </div>
+        </div>
+
+        <!-- Questions List -->
+        <div th:if="${#lists.isEmpty(questions)}" class="alert alert-info">
+            <i class="fas fa-info-circle"></i> Chưa có câu hỏi nào. Hãy tạo câu hỏi đầu tiên!
+        </div>
+
+        <div class="row">
+            <div class="col-md-12" th:each="question, iterStat : ${questions}">
+                <div class="card question-card mb-3">
+                    <div class="card-header bg-light">
+                        <strong>Câu <span th:text="${iterStat.count}"></span>:</strong>
+                        <span th:text="${question.questionText}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <div th:each="answer, answerStat : ${question.answers}" 
+                                 class="list-group-item"
+                                 th:classappend="${answerStat.index == question.correctAnswerIndex} ? 'correct-answer' : ''">
+                                <strong th:text="${'ABCD'.charAt(answerStat.index)} + '. '"></strong>
+                                <span th:text="${answer}"></span>
+                                <span th:if="${answerStat.index == question.correctAnswerIndex}" 
+                                      class="badge bg-success float-end">
+                                    <i class="fas fa-check"></i> Đáp án đúng
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a th:href="@{/questions/edit/{id}(id=${question.id})}" 
+                           class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i> Sửa
+                        </a>
+                        <a th:href="@{/questions/delete/{id}(id=${question.id})}" 
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa câu hỏi này?');">
+                            <i class="fas fa-trash"></i> Xóa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

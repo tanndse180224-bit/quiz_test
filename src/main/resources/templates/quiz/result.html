@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết Quả Bài Kiểm Tra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .result-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .score-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .score-number {
+            font-size: 5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .score-label {
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+        .result-card.correct {
+            border-left: 5px solid #28a745;
+        }
+        .result-card.incorrect {
+            border-left: 5px solid #dc3545;
+        }
+        .question-number-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .correct .question-number-badge {
+            background-color: #28a745;
+            color: white;
+        }
+        .incorrect .question-number-badge {
+            background-color: #dc3545;
+            color: white;
+        }
+        .answer-item {
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .answer-correct {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            font-weight: 600;
+        }
+        .answer-wrong {
+            background-color: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+        .answer-label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        .btn-action {
+            padding: 12px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        .btn-retry {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        .btn-retry:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-home {
+            background: #6c757d;
+            border: none;
+            color: white;
+        }
+        .btn-home:hover {
+            background: #5a6268;
+            transform: scale(1.05);
+        }
+        .icon-result {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <!-- Score Card -->
+        <div class="score-card">
+            <div>
+                <i class="fas fa-trophy" style="font-size: 3rem; margin-bottom: 20px;"></i>
+            </div>
+            <div class="score-number" th:text="${score} + '%'"></div>
+            <div class="score-label">Điểm Số Của Bạn</div>
+            
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-number text-success" th:text="${correctCount}">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-label">Đúng</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number text-danger" th:text="${totalQuestions - correctCount}">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-label">Sai</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${totalQuestions}">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div class="stat-label">Tổng số</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Results -->
+        <h3 class="mb-4"><i class="fas fa-clipboard-check"></i> Chi Tiết Kết Quả</h3>
+        
+        <div th:each="result, iterStat : ${results}" 
+             class="result-card" 
+             th:classappend="${result.correct} ? 'correct' : 'incorrect'">
+            
+            <div class="d-flex align-items-start">
+                <span class="question-number-badge" th:text="${iterStat.count}"></span>
+                <div class="flex-grow-1">
+                    <div class="mb-3">
+                        <strong>Câu hỏi:</strong> <span th:text="${result.question.questionText}"></span>
+                    </div>
+                    
+                    <div class="answers">
+                        <div th:each="answer, answerStat : ${result.question.answers}" 
+                             class="answer-item"
+                             th:classappend="${answerStat.index == result.question.correctAnswerIndex} ? 'answer-correct' : 
+                                             (${answerStat.index == result.answeredIndex} and ${!result.correct}) ? 'answer-wrong' : ''">
+                            
+                            <span class="answer-label" th:text="${'ABCD'.charAt(answerStat.index)} + '.'"></span>
+                            <span th:text="${answer}"></span>
+                            
+                            <!-- Show icons -->
+                            <span th:if="${answerStat.index == result.question.correctAnswerIndex}" 
+                                  class="float-end text-success">
+                                <i class="fas fa-check-circle icon-result"></i> Đáp án đúng
+                            </span>
+                            
+                            <span th:if="${answerStat.index == result.answeredIndex and !result.correct}" 
+                                  class="float-end text-danger">
+                                <i class="fas fa-times-circle icon-result"></i> Bạn đã chọn
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Result Status -->
+                    <div class="mt-3">
+                        <span th:if="${result.correct}" class="badge bg-success" style="font-size: 1rem; padding: 8px 15px;">
+                            <i class="fas fa-check"></i> Chính xác
+                        </span>
+                        <span th:unless="${result.correct}" class="badge bg-danger" style="font-size: 1rem; padding: 8px 15px;">
+                            <i class="fas fa-times"></i> Không chính xác
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center mt-5">
+            <a href="/quiz/start" class="btn btn-retry btn-action me-3">
+                <i class="fas fa-redo"></i> Làm Lại Bài Kiểm Tra
+            </a>
+            <a href="/" class="btn btn-home btn-action">
+                <i class="fas fa-home"></i> Về Trang Chủ
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animate score on load
+        window.addEventListener('load', function() {
+            const scoreElement = document.querySelector('.score-number');
+            const targetScore = parseFloat(scoreElement.textContent);
+            let currentScore = 0;
+            const duration = 1500;
+            const increment = targetScore / (duration / 16);
+            
+            function animate() {
+                currentScore += increment;
+                if (currentScore < targetScore) {
+                    scoreElement.textContent = currentScore.toFixed(2) + '%';
+                    requestAnimationFrame(animate);
+                } else {
+                    scoreElement.textContent = targetScore.toFixed(2) + '%';
+                }
+            }
+            
+            animate();
+        });
+    </script>
+</body>
+</html>

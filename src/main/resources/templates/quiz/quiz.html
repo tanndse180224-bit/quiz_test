@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Làm Bài Kiểm Tra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .quiz-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .quiz-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .question-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+        }
+        .question-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .answer-option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .answer-option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+        .answer-option input[type="radio"] {
+            margin-right: 15px;
+        }
+        .answer-option input[type="radio"]:checked + label {
+            color: #667eea;
+            font-weight: 600;
+        }
+        .answer-option:has(input[type="radio"]:checked) {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-color: #667eea;
+        }
+        .submit-section {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 15px 60px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .btn-back {
+            background: #6c757d;
+            border: none;
+            padding: 12px 40px;
+            font-size: 1rem;
+            border-radius: 50px;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-back:hover {
+            background: #5a6268;
+            transform: scale(1.05);
+        }
+        .progress-indicator {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .answer-label {
+            font-weight: 600;
+            color: #495057;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Header -->
+        <div class="quiz-header">
+            <h1 class="mb-3"><i class="fas fa-clipboard-list"></i> Bài Kiểm Tra Trắc Nghiệm</h1>
+            <div class="progress-indicator">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-question-circle text-primary"></i>
+                        <strong class="text-dark">Tổng số câu hỏi:</strong> 
+                        <span class="text-primary" th:text="${totalQuestions}"></span>
+                    </div>
+                    <div>
+                        <i class="fas fa-clock text-warning"></i>
+                        <strong class="text-dark">Thời gian:</strong> 
+                        <span class="text-warning">Không giới hạn</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Form -->
+        <form action="/quiz/submit" method="post" id="quizForm" onsubmit="return validateQuiz()">
+            <div th:each="question, iterStat : ${questions}" class="question-card">
+                <div class="d-flex align-items-start">
+                    <span class="question-number" th:text="${iterStat.count}"></span>
+                    <div class="flex-grow-1">
+                        <div class="question-text" th:text="${question.questionText}"></div>
+                        
+                        <div class="answers">
+                            <div th:each="answer, answerStat : ${question.answers}" class="answer-option">
+                                <input type="radio" 
+                                       th:id="'q' + ${question.id} + '_a' + ${answerStat.index}"
+                                       th:name="'question_' + ${question.id}"
+                                       th:value="${answerStat.index}"
+                                       class="form-check-input">
+                                <label th:for="'q' + ${question.id} + '_a' + ${answerStat.index}" 
+                                       class="form-check-label" style="cursor: pointer; width: 100%;">
+                                    <span class="answer-label" th:text="${'ABCD'.charAt(answerStat.index)} + '.'"></span>
+                                    <span th:text="${answer}"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <a href="/" class="btn btn-back me-3">
+                    <i class="fas fa-arrow-left"></i> Quay về trang chủ
+                </a>
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-check-circle"></i> Nộp Bài
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function validateQuiz() {
+            const form = document.getElementById('quizForm');
+            const questions = form.querySelectorAll('.question-card');
+            let unansweredCount = 0;
+            
+            questions.forEach((question, index) => {
+                const radios = question.querySelectorAll('input[type="radio"]');
+                const answered = Array.from(radios).some(radio => radio.checked);
+                if (!answered) {
+                    unansweredCount++;
+                }
+            });
+            
+            if (unansweredCount > 0) {
+                const confirmMessage = `Bạn còn ${unansweredCount} câu chưa trả lời. Bạn có chắc chắn muốn nộp bài không?`;
+                return confirm(confirmMessage);
+            }
+            
+            return confirm('Bạn có chắc chắn muốn nộp bài không?');
+        }
+
+        // Add click handler to answer options for better UX
+        document.querySelectorAll('.answer-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+            });
+        });
+    </script>
+</body>
+</html>
